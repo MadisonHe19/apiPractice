@@ -10,7 +10,7 @@ header = {"content-type": "application/json"}
 # response object
 response = requests.post(url, json = jsondata, headers = header)
 
-*******************************************************************************************************************
+#*******************************************************************************************************************
 
 ########2. send json to server and server should return string. Reverse string then send back
 url = "http://challenge.code2040.org/api/reverse"
@@ -30,7 +30,7 @@ header = {"content-type": "application/json"}
 response = requests.post(url, json = jsondata, headers = header)
 
 
-*******************************************************************************************************************
+#*******************************************************************************************************************
 
 ########3. server will send dict with string and array of strings. Find string in array and return index.
 url = "http://challenge.code2040.org/api/haystack"
@@ -55,6 +55,20 @@ url = "http://challenge.code2040.org/api/haystack/validate"
 jsondata = {"token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe", "needle": indexOf}
 response = requests.post(url, json = jsondata, headers = header)
 
-*******************************************************************************************************************
+#*******************************************************************************************************************
 
 #4 server will send string(a prefix) and array of strings. Return array of strings without prefix
+url = "http://challenge.code2040.org/api/prefix"
+jsondata = jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe"}
+response = requests.post(url, json = jsondata, headers = header)
+
+receive = json.loads(response.text)
+newlist = []
+
+for x in receive["array"]:
+    if receive["prefix"] != x[ :len(receive["prefix"])]:
+        newlist.append(x)
+
+url = "http://challenge.code2040.org/api/prefix/validate"
+jsondata = jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe", "array": newlist}
+response = requests.post(url, json = jsondata, headers = header)
