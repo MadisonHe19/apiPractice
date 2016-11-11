@@ -88,7 +88,6 @@ received = json.loads(response.text)
 def computeIso8601(received):
     #convert iso 8601 string to datetime object
     newTime = dateutil.parser.parse(received["datestamp"])
-    #x = datetime.strptime( "2007-03-04T21:08:12", "%Y-%m-%dT%H:%M:%SZ" )
 
     #create timedelta object
     interval = received["interval"]
