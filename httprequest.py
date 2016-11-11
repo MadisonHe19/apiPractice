@@ -1,5 +1,7 @@
 import requests
 import json
+from datetime import datetime, timedelta
+import dateutil.parser
 
 ########1.
 # send json that includes token and github to endpoint, using http post request
@@ -59,16 +61,46 @@ response = requests.post(url, json = jsondata, headers = header)
 
 #4 server will send string(a prefix) and array of strings. Return array of strings without prefix
 url = "http://challenge.code2040.org/api/prefix"
-jsondata = jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe"}
+jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe"}
 response = requests.post(url, json = jsondata, headers = header)
 
-receive = json.loads(response.text)
+received = json.loads(response.text)
 newlist = []
 
-for x in receive["array"]:
-    if receive["prefix"] != x[ :len(receive["prefix"])]:
+for x in received["array"]:
+    if received["prefix"] != x[ :len(received["prefix"])]:
         newlist.append(x)
 
 url = "http://challenge.code2040.org/api/prefix/validate"
-jsondata = jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe", "array": newlist}
+jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe", "array": newlist}
+response = requests.post(url, json = jsondata, headers = header)
+
+#*******************************************************************************************************************
+
+
+#5. server sends json with datestamp and interval for seconds. I must return datestamp in same format and add intervals to it
+url = "http://challenge.code2040.org/api/dating"
+jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe"}
+response = requests.post(url, json = jsondata, headers = header)
+
+received = json.loads(response.text)
+
+def computeIso8601(received):
+    #convert iso 8601 string to datetime object
+    newTime = dateutil.parser.parse(received["datestamp"])
+    #x = datetime.strptime( "2007-03-04T21:08:12", "%Y-%m-%dT%H:%M:%SZ" )
+
+    #create timedelta object
+    interval = received["interval"]
+    addedTime = timedelta(0,interval)
+
+    #create new variable to hold new time( add timedelta object and datetime object to create new datetime object)
+    newIso =  newTime + addedTime
+
+    #remove timezone info from end of new isoformat and append Z to keep format consistent
+    newIso = newIso.replace(tzinfo=None).isoformat() + "Z"
+    return newIso
+
+url = "http://challenge.code2040.org/api/dating/validate"
+jsondata = { "token": "afa5d2bbbd8c9e0fb41eaf1cc1fd28fe","datestamp": computeIso8601(received)}
 response = requests.post(url, json = jsondata, headers = header)
